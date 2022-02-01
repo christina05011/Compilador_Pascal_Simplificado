@@ -34,3 +34,30 @@ Trabajo Final del Curso de Compiladores
 2. El archivo programa.txt puede ser modificado.
 3. En el archivo main.cpp colocar la dirección donde se encuentra el archivo programa.txt. La dirección dentro de la función get() es una muestra, no funciona.
 4. Ejecutar y se imprimirá en pantalla todos los tokens y errores.
+
+## Descripción de Implementación PARSER
+1. Funciones generales:
+  - get_vector(): Toma todos los tokens del scanner y los guarda en el vector tags.
+  - next_token(): Toma el siguiente token del vector tags con su tag y su valor.
+  - print_error(): Imprimir el error encontrado.
+  - add_node(): Insert un nuevo nodo en el árbol, indicando el padre y el nombre del hijo.
+  - parse_tree(): Para imprimir recursivamente el árbol, con un | y con espacios para mostrar donde se encuentra el padre.
+  - parser(): Función que llama a la clase parser y verifica según la gramática. Si tiene un error, lo imprime y termina el proceso.
+             Si no tiene error, imprime el árbol de parseo.
+             
+2. Datos generales:
+  - Se tiene una estructura para el nodo del árbol, para el árbol y para el parser.
+  - La estructura parser tiene todas las funciones según la gramática generada (vea grammar.txt).
+  - El árbol de parseo continúa hasta que no haya más no-terminales.
+
+## Instrucciones para Ejecutar
+
+1. Crear un nuevo proyecto con los archivos main.cpp, scanner.h, parser.h y programa.txt.
+2. El archivo programa.txt puede ser modificado (archivo del cual va a leer el scanner).
+3. En el archivo main.cpp colocar la dirección donde se encuentra el archivo programa.txt. La dirección dentro de la función get() es una muestra, no funciona.
+4. Ejecutar y se imprimirá en pantalla:
+  - Todos los tokens y errores del scanner. 
+  - Todos los tokens que recibe el parser y verifica. Cuando encuentre un error, lo imprime y termina el proceso.
+  - Si no encontró ningún error, imprime el árbol de parseo.
+
+##### NOTA: En el archivo example_output.txt, se encuentra un ejemplo de lo que se imprime después de ejecutar según las indicaciones. Además, se utilizó el ejemplo que está en programa.txt para el proceso.
