@@ -16,7 +16,7 @@ const vector<pair<string, string>> operators{
     pair<string,string>("OP_NOT_EQU","<>"), pair<string,string>("OP_LT","<"), pair<string,string>("OP_LE","<="),
     pair<string,string>("OP_GE",">="), pair<string,string>("OP_GT",">"), pair<string,string>("OP_HAT","^"),
     pair<string,string>("OP_AND","and"), pair<string,string>("OP_OR","or"), pair<string,string>("OP_NOT","not"),
-    pair<string,string>("OP_DIV_ENT","div"), pair<string,string>("OP_MOD","mod"), pair<string,string>("OP_IN","in"), 
+    pair<string,string>("OP_DIV_ENT","div"), pair<string,string>("OP_MOD","mod"), pair<string,string>("OP_IN","in"),
     pair<string,string>("OP_DOT",".")
 };
 const vector<pair<string, string>> delimiters{
@@ -42,8 +42,7 @@ string file, context = "";
 char get_char() { //consume the first char and move to the second
     context += file[0];
     file.erase(0, 1); //consume first || erase first
-    if (file[0] != EOF) return file[0];
-    return NULL;
+    return file[0];
 }
 bool peek_char(char next) { //see the next char but not consume it
     return (next == file[1]);
@@ -62,7 +61,7 @@ void skip_comment() {//not consume
     if (file[0] == '(' && peek_char('*')) get_char(); //(
     char ch = get_char(); //{ || *
     while (ch) { //# 
-        if (ch == '*' && peek_char(')')) { 
+        if (ch == '*' && peek_char(')')) {
             get_char(); get_char();
             context = "";  return; //not consume, not save
         }
@@ -74,11 +73,11 @@ void skip_comment() {//not consume
 }
 bool skip_space() { //space, tab or endLine
     char ch = file[0]; bool yes = 0;
-    while (ch == ' ' || ch == '    ' || ch == '\t' || ch == '\v' || ch == '\f' || ch == '\n' || ch == 13) 
+    while (ch == ' ' || ch == '    ' || ch == '\t' || ch == '\v' || ch == '\f' || ch == '\n' || ch == 13)
         ch = get_char(), yes = 1; //not consume 
-    
+
     if (ch == '\0') file = "", yes = 1;
-    if(yes) context = "";
+    if (yes) context = "";
     return yes;
 }
 string convertNumExpDouble(double num) { //num exp [signo]* to double
@@ -105,7 +104,7 @@ pair<int, string> isNumber() {//convert to number
                 return pair<int, string>(7, "Unexpected letter in number " + context);
             }
             if (isdigit(context[context.size() - 1])) //expo signo
-                return pair<int, string>(3, convertNumExpDouble(stod(context))); //to double
+                return pair<int, string>(8, convertNumExpDouble(stod(context))); //to double
             else return pair<int, string>(7, "Unexpected number " + context);
         }
         if (isalpha(ch)) { //continue no matter a letter
@@ -117,7 +116,7 @@ pair<int, string> isNumber() {//convert to number
         if (!isdigit(ch) && !isalpha(ch)) break;
         ch = get_char(); //context fills
     }
-    if (ch != '.' || (ch=='.' && peek_char('.')))
+    if (ch != '.' || (ch == '.' && peek_char('.')))
         return pair<int, string>(3, convertNumDouble(context)); //int // if continue ..
     ch = get_char(); //for .
     //For float (with .)
@@ -134,7 +133,7 @@ pair<int, string> isNumber() {//convert to number
                 return pair<int, string>(7, "Unexpected letter in number " + context);
             }
             if (isdigit(context[context.size() - 1])) //expo signo
-                return pair<int, string>(3, convertNumExpDouble(stod(context))); //to double
+                return pair<int, string>(8, convertNumExpDouble(stod(context))); //to double
             else return pair<int, string>(7, "Unexpected number " + context);
         }
         if (isalpha(ch)) { //continue no matter a letter
@@ -146,16 +145,16 @@ pair<int, string> isNumber() {//convert to number
         if (!isdigit(ch) && !isalpha(ch)) break;
         ch = get_char();
     }
-    return pair<int, string>(3, convertNumDouble(context)); //to double
+    return pair<int, string>(8, convertNumDouble(context)); //to double
 }
-pair<int, string> isWord() {
-    char ch = file[0]; 
+pair<int, string> isWord() { //To know if is {Reserved_word || ID || operator} (maybe)
+    char ch = file[0];
     if ((!peek_char('\0') && !isalpha(peek_char()) && !isdigit(peek_char())) || peek_char('\0')) {
         get_char(); context = "";
         string temp = ""; temp += ch;
         return pair<int, string>(4, temp); //only 1 letter is ID
     }
-    
+
     if (isdigit(peek_char())) { //ID 
         ch = get_char();
         while (isdigit(ch) || isalpha(ch)) ch = get_char();
@@ -163,7 +162,7 @@ pair<int, string> isWord() {
     }
     //{Reserved_word || ID || operator} (maybe)
     while (isalpha(peek_char())) //take letters until other symbol
-       get_char();
+        get_char();
     if (isdigit(peek_char())) { //ID
         ch = get_char();
         while (isdigit(ch) || isalpha(ch)) ch = get_char();
@@ -175,14 +174,14 @@ pair<int, string> isWord() {
         for (const auto& vect : operators)
             if (vect.second == context) {
                 opt = 0; break; //OPERATOR (and or div ...)
-            } 
+            }
         if (opt == -1) { //continue looking for
             for (const auto& vect : reserved_words)
                 if (vect.second == context) {
                     opt = 2; break; //RESERVED_WORD
                 }
         }
-        if (!opt || opt == 2) 
+        if (!opt || opt == 2)
             return pair<int, string>(opt, context); //from vectors
 
         return pair<int, string>(4, context); //ID, if not found in vectors
@@ -200,7 +199,7 @@ pair<int, string> isString() {
         while (ch != '\0' && ch != '\'') //when is not ''
             ch = get_char();
         context = contx + context;
-        if (ch == '\0') return pair<int, string>(7, "Missing end ' in " + context); 
+        if (ch == '\0') return pair<int, string>(7, "Missing end ' in " + context);
     }
     get_char(); context = context.erase(context.length() - 1); //final ' not
     return pair<int, string>(5, context);
@@ -218,7 +217,7 @@ pair<int, string> scanner() {
     int opt = -1; context = "";
     ch = file[0];
     switch (ch) {
-    //Look for operators opt = 0
+        //Look for operators opt = 0
     case '+': opt = 0; get_char(); break;
     case '-': opt = 0; get_char(); break;
     case '*': opt = 0; get_char(); break;
@@ -226,7 +225,7 @@ pair<int, string> scanner() {
     case ':':
         if (peek_char('=')) get_char(), opt = 0; //operator opt = 0
         else opt = 1; //delimiter opt = 1
-        get_char();  break; 
+        get_char();  break;
     case '=': opt = 0; get_char(); break;
     case '<':
         if (peek_char('>')) get_char();
@@ -236,7 +235,7 @@ pair<int, string> scanner() {
         if (peek_char('=')) get_char();
         opt = 0; get_char(); break;
     case '^': opt = 0; get_char(); break;
-    //Look for delimiters opt = 1
+        //Look for delimiters opt = 1
     case ',': opt = 1; get_char(); break;
     case ';': opt = 1; get_char(); break;
     case '(': opt = 1; get_char(); break;
@@ -250,19 +249,19 @@ pair<int, string> scanner() {
     default:
         break;
     };
-    if (opt == 1 || !opt) return pair<int, string>(opt, context); 
+    if (opt == 1 || !opt) return pair<int, string>(opt, context);
     context = ""; ch = file[0];
     //Loof for number
-    if (isdigit(ch)) 
-        return isNumber(); 
-    
-    if (isalpha(ch)) //Look for reserved_word or ID or operator
-        return isWord(); 
-    
-    if (ch == '\'') //Look for string
-        return isString(); 
+    if (isdigit(ch))
+        return isNumber();
 
-    get_char(); 
+    if (isalpha(ch)) //Look for reserved_word or ID or operator
+        return isWord();
+
+    if (ch == '\'') //Look for string
+        return isString();
+
+    get_char();
     return pair<int, string>(7, "Unknown symbol:" + context);
 }
 string gettoken() { //put token in tokens_vector or error in errors_vector
@@ -281,7 +280,7 @@ string gettoken() { //put token in tokens_vector or error in errors_vector
         for (const auto& vect : reserved_words)
             if (vect.second == data.second) tag = vect.first;
     }
-    else if (data.first == 3)  tag = "NUM";
+    else if (data.first == 3)  tag = "NUM_INT";
     else if (data.first == 4) tag = "ID";
     else if (data.first == 5) tag = "STRING";
     else if (data.first == 6) tag = "EOF";
@@ -289,6 +288,7 @@ string gettoken() { //put token in tokens_vector or error in errors_vector
         st = "<error," + data.second + ">";
         errors.push_back(st); return st;
     }
+    else if (data.first == 8) tag = "NUM_REAL";
     else { cout << data.first << endl; return to_string(data.first); }
     st = "<" + tag + "," + data.second + ">";
     tokens.push_back(st); return st;
@@ -300,9 +300,8 @@ void get(const string& nameFile) { //get all tokesn and errors from the file
 
     string temp; file = "";
     char byte = 0;
-    while (std::getline(ff, temp)) {
+    while (std::getline(ff, temp)) 
         file += temp + '\n';
-    }
     ff.close();
 
     while (!file.empty()) {
@@ -311,11 +310,4 @@ void get(const string& nameFile) { //get all tokesn and errors from the file
     }
     string finalTok = "<EOF,$>";
     tokens.push_back(finalTok); cout << finalTok << endl;
-
-    /*cout << "---------TOKENS----------" << endl;
-    for (int i = 0; i < tokens.size(); i++)
-        cout << tokens[i] << endl;
-    cout << "---------ERRORS----------" << endl;
-    for (int i = 0; i < errors.size(); i++)
-        cout << errors[i] << endl;*/
 }
