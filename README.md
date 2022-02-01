@@ -28,13 +28,6 @@ Trabajo Final del Curso de Compiladores
   - En caso no se encuentre un símbolo, se obtiene un error.
   - Todos los errores se almacenan y continúa analizando el scanner.
 
-## Instrucciones para Ejecutar
-
-1. Crear un nuevo proyecto con los archivos main.cpp, scanner.h y programa.txt.
-2. El archivo programa.txt puede ser modificado.
-3. En el archivo main.cpp colocar la dirección donde se encuentra el archivo programa.txt. La dirección dentro de la función get() es una muestra, no funciona.
-4. Ejecutar y se imprimirá en pantalla todos los tokens y errores.
-
 ## Descripción de Implementación PARSER
 1. Funciones generales:
   - get_vector(): Toma todos los tokens del scanner y los guarda en el vector tags.
