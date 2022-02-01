@@ -1,21 +1,11 @@
-{ reserved words }
-array begin case
-const do downto
+program forLoop;
+var
+   a: integer;
 
-else end file
-for function goto
-if label nil
-of packed
-procedure		program
-record
-repeat
-set then
-to   type
-until var
-while  with
-
-{ operators}
-+ - * / := = <> < <= >= > ^ . and or not div mod in
-
-{ delimers toktype(1), val(1..8) }
-, ;: ( ) [ ] ..
+begin
+   for a := 10  to 20 do
+   
+   begin
+      writeln('value of a: ', a);
+   end;
+end.
