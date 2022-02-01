@@ -1,7 +1,7 @@
 # Compilador_Pascal_Simplificado
 Trabajo Final del Curso de Compiladores
 
-## Descripción de Implementación
+## Descripción de Implementación SCANNER
 1. Funciones generales:
   - get_char(): Devolver siguiente char y consumirlo.
   - peek_char(): Devolver el siguiente char, pero sin consumirlo. 
