@@ -1,0 +1,81 @@
+Program → PROGRAM id /'(id)'|e/; ConstBlock VarBlock TypeBlock FunctionBlock ProcedureBlock MainCode
+
+ConstBlock → CONST ConstList | Ɛ
+
+ConstList → id = Value; ConstList | id = Value;
+
+Value → INTEGER | REAL | STRING
+
+TypeBlock → TYPE TypeList | Ɛ
+
+TypeList → NameList = TypeDecl ; TypeList | Ɛ
+
+NameList → id | id, NameList 
+
+TypeDecl → SimpleDecl | ArrayDecl | RecordDecl
+
+SimpleDecl  → Value | INTEGER .. INTEGER | STRING .. STRING |
+		→ - INTEGER .. INTEGER | - INTEGER .. - INTEGER
+
+ArrayDecl →  ARRAY[SimpleDecl] OF SimpleDecl
+
+RecordDecl → RECORD RecordList END;
+
+RecordList → NameList : TypeDecl ; RecordList | Ɛ
+
+VarBlock → VAR VarList | Ɛ 
+
+VarList → NameList : TypeDecl ; VarList | Ɛ
+
+FunctionBlock → FUNCTION id Parameters : SimpleDecl ; BEGIN StmtList END; | e
+
+ProcedureBlock → PROCEDURE id Parameters ; BEGIN StmtList END; | e
+
+Parameters → ( ) | (ParamList)
+
+ParamList → VAR NameList : SimpleDecl ParamCont |  NameList : SimpleDecl ParamCont
+
+ParamCont → , ParamList | e
+
+StmtList → Stmt StmtList  | e
+
+Stmt → break; | continue; | Assign ; | Proc ; | IfBlock | ElseBolck | RepeatBlock | WhileBlock | ForBlock | CaseBlock | GotoBlock ;
+
+Assign → ID := Expr 
+Proc → READ args | READLN args | WRITE args | WRITELN args
+
+args → (ExprList)
+
+IfBlock → IF Expr THEN Stmt ElseBlock
+
+ElseBolck → ELSE Stmt | e
+
+RepeatBlock → REPEAT StmtList UNTIL Expr
+
+WhileBlock → WHILE Expr DO BEGIN|e StmtList END|e;
+
+ForBlock → FOR Assign Direction Expr DO BEGIN|e StmtList END|e;
+
+Direction → TO | DOWNTO
+
+CaseBlock → CASE Expr OF CaseList END
+
+CaseList → CaseExpr CaseList | e
+
+CaseExpr → Value : Stmt ; | ID : Stmt ;
+
+GotoBlock → GOTO INTEGER
+
+ExprList → Expr , ExprList | e
+
+Expr → Expr_ RelOp Expr | Expr_
+
+RelOp → = | <> | < | <= | >= | >
+
+Expr_ → Term + Expr_ | Term - Expr_ | Term OR Expr_ | Term
+
+Term → Factor MUL|DIV|MOD|AND Term	 	| Factor
+
+Factor → ID | Value | FUNCTION (ExprList) | (ExprList) |NOT Factor | MINUS Factor
+
+MainCode → BEGIN StmtList END.
