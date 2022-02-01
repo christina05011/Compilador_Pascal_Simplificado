@@ -251,7 +251,7 @@ pair<int, string> scanner() {
     };
     if (opt == 1 || !opt) return pair<int, string>(opt, context);
     context = ""; ch = file[0];
-    //Loof for number
+    //Look for number
     if (isdigit(ch))
         return isNumber();
 
@@ -300,7 +300,7 @@ void get(const string& nameFile) { //get all tokesn and errors from the file
 
     string temp; file = "";
     char byte = 0;
-    while (std::getline(ff, temp)) 
+    while (std::getline(ff, temp))
         file += temp + '\n';
     ff.close();
 
