@@ -1,0 +1,66 @@
+------------------------------SCANNER------------------------------
+<PROGRAM,program> <ID,forLoop> <DEL_SEMC,;> <VAR,var> <ID,a> <DEL_COL,:> <ID,integer> <DEL_SEMC,;> <BEGIN,begin> <FOR,for> <ID,a> <OP_ASIG,:=> <NUM_INT,10.000000> <TO,to> <NUM_INT,20.000000> <DO,do> <BEGIN,begin> <ID,writeln> <DEL_OP,(> <STRING,value of a: > <DEL_COM,,> <ID,a> <DEL_CP,)> <DEL_SEMC,;> <END,end> <DEL_SEMC,;> <END,end> <OP_DOT,.> <EOF,$>
+------------------------------PARSER------------------------------
+PROGRAM    program
+ID    forLoop
+DEL_SEMC    ;
+VAR    var
+ID    a
+DEL_COL    :
+ID    integer
+DEL_SEMC    ;
+BEGIN    begin
+FOR    for
+ID    a
+OP_ASIG    :=
+NUM_INT    10.000000
+TO    to
+NUM_INT    20.000000
+DO    do
+BEGIN    begin
+ID    writeln
+DEL_OP    (
+STRING    value of a:
+DEL_COM    ,
+ID    a
+DEL_CP    )
+DEL_SEMC    ;
+END    end
+DEL_SEMC    ;
+END    end
+OP_DOT    .
+EOF    $
+------------------------------PARSE_TREE------------------------------
+|program id ; VarBlock MainCode
+             |var VarList
+                 |NameList : TypeDecl ;
+                 |id
+                            |SimpleDecl
+                            |integer
+                      |begin StmtList end .
+                            |Stmt
+                            |ForBlock
+                            |for Assign TO Expr do begin StmtList end ;
+                                |id := Expr
+                                      |Expr_
+                                      |Term
+                                      |Factor
+                                      |v_NUM_INT
+                                          |Expr_
+                                          |Term
+                                          |Factor
+                                          |v_NUM_INT
+                                                        |Stmt
+                                                        |Proc ;
+                                                        |writeln Args
+                                                                |( ExprList )
+                                                                  |Expr , ExprList
+                                                                  |Expr_
+                                                                  |Term
+                                                                  |Factor
+                                                                  |v_STRING
+                                                                         |Expr
+                                                                         |Expr_
+                                                                         |Term
+                                                                         |Factor
+                                                                         |v_ID
