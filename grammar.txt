@@ -39,7 +39,7 @@ ParamCont → , ParamList | e
 
 StmtList → Stmt StmtList  | e
 
-Stmt → break; | continue; | Assign ; | Proc ; | IfBlock | ElseBolck | RepeatBlock | WhileBlock | ForBlock | CaseBlock | GotoBlock ;
+Stmt → break; | continue; | Assign ; | Proc ; | IfBlock | ElseBlock ; | RepeatBlock ; | WhileBlock | ForBlock | CaseBlock | GotoBlock ;
 
 Assign → ID := Expr 
 Proc → READ args | READLN args | WRITE args | WRITELN args
@@ -48,7 +48,7 @@ args → (ExprList)
 
 IfBlock → IF Expr THEN Stmt ElseBlock
 
-ElseBolck → ELSE Stmt | e
+ElseBlock → ELSE Stmt | e
 
 RepeatBlock → REPEAT StmtList UNTIL Expr
 
