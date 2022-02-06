@@ -1,0 +1,40 @@
+------------------------------SCANNER------------------------------
+<PROGRAM,program> <ID,Test2error> <DEL_SEMC,;> <CONST,const> <ID,num1> <OP_EQU,=> <NUM_INT,11.000000> <error,Unknown symbol:?> <ID,num2> <OP_ASIG,:=> <NUM_INT,27.000000> <DEL_SEMC,;> <VAR,var> <ID,sum> <DEL_COL,:> <ID,integer> <DEL_SEMC,;> <BEGIN,begin> <ID,sum> <OP_ASIG,:=> <ID,num1> <OP_SUM,+> <OP_SUM,+> <ID,num2> <DEL_SEMC,;> <ID,Writeln> <DEL_OP,(> <ID,sum> <DEL_CP,)> <DEL_SEMC,;> <END,end> <OP_DOT,.> <EOF,$>
+------------------------------PARSER------------------------------
+PROGRAM    program
+ID    Test2error
+DEL_SEMC    ;
+CONST    const
+ID    num1
+OP_EQU    =
+NUM_INT    11.000000
+ID    num2
+ErrorConstList: Find 'num2' but it must be ';'.
+OP_ASIG    :=
+NUM_INT    27.000000
+DEL_SEMC    ;
+VAR    var
+ID    sum
+DEL_COL    :
+ID    integer
+DEL_SEMC    ;
+BEGIN    begin
+ID    sum
+OP_ASIG    :=
+ID    num1
+OP_SUM    +
+OP_SUM    +
+ErrorFactor: Find '+' but it must be 'id' or 'int' or 'real' or 'string' or 'function' or '(' or 'not' or '-'.
+ID    num2
+DEL_SEMC    ;
+ID    Writeln
+DEL_OP    (
+ID    sum
+DEL_CP    )
+DEL_SEMC    ;
+END    end
+OP_DOT    .
+EOF    $
+------------------------------ERRORS------------------------------
+ErrorConstList: Find 'num2' but it must be ';'.
+ErrorFactor: Find '+' but it must be 'id' or 'int' or 'real' or 'string' or 'function' or '(' or 'not' or '-'.
