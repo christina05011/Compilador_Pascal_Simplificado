@@ -196,10 +196,10 @@ pair<int, string> isString() {
         get_char();
         string contx = context;
         ch = get_char(); context = "";
-        while (ch != '\0' && ch != '\'') //when is not ''
+        while (ch != '\n' && ch != '\0' && ch != '\'') //when is not ''
             ch = get_char();
         context = contx + context;
-        if (ch == '\0') return pair<int, string>(7, "Missing end ' in " + context);
+        if (ch == '\0' || ch == '\n') return pair<int, string>(7, "Missing end ' in str:" + context);
     }
     get_char(); context = context.erase(context.length() - 1); //final ' not
     return pair<int, string>(5, context);
