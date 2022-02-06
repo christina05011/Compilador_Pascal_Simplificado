@@ -39,23 +39,23 @@ ParamCont → , ParamList | e
 
 StmtList → Stmt StmtList  | e
 
-Stmt → break; | continue; | Assign ; | Proc ; | IfBlock ElseBlock | RepeatBlock ; | WhileBlock | ForBlock | CaseBlock | GotoBlock ;
+Stmt → break; | continue; | Assign | Proc | IfBlock ElseBlock | RepeatBlock ; | WhileBlock | ForBlock | CaseBlock | GotoBlock 
 
-Assign → ID := Expr 
+Assign → ID := Expr ;
 
-Proc → READ args | READLN args | WRITE args | WRITELN args
+Proc → READ args ; | READLN args ; | WRITE args ; | WRITELN args ;
 
 args → (ExprList)
 
-IfBlock → IF Expr THEN /'BEGIN'/|e StmtList /'END'/|e ElseBlock
+IfBlock → IF Expr THEN BEGIN StmtList END (;|ElseBlock)
 
-ElseBlock → ELSE /'BEGIN'/|e StmtList /'END'/|e ;	| e
+ElseBlock → ELSE BEGIN StmtList END;	| e
 
 RepeatBlock → REPEAT StmtList UNTIL Expr
 
-WhileBlock → WHILE Expr DO /'BEGIN'/|e StmtList /'END'/|e ;
+WhileBlock → WHILE Expr DO BEGIN StmtList END ;
 
-ForBlock → FOR Assign Direction Expr DO /'BEGIN'/|e StmtList /'END'/|e ;
+ForBlock → FOR id := Value Direction Expr DO BEGIN StmtList END ;
 
 Direction → TO | DOWNTO
 
@@ -65,7 +65,7 @@ CaseList → CaseExpr CaseList | e
 
 CaseExpr → Value : Stmt ; | ID : Stmt ;
 
-GotoBlock → GOTO INTEGER
+GotoBlock → GOTO INTEGER ;
 
 ExprList → Expr , ExprList | e
 
