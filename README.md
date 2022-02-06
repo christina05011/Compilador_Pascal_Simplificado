@@ -42,6 +42,7 @@ Trabajo Final del Curso de Compiladores
   - Se tiene una estructura para el nodo del árbol, para el árbol y para el parser.
   - La estructura parser tiene todas las funciones según la gramática generada (vea grammar.txt).
   - El árbol de parseo continúa hasta que no haya más no-terminales.
+  - Incluye la Recuperación de errores: Consume y llama a la función next_token(), mientras no sea parte de los Siguientes(FOLLOW'S). De esa manera pasa a la siguiente producción.
 
 ## Instrucciones para Ejecutar
 
@@ -50,7 +51,8 @@ Trabajo Final del Curso de Compiladores
 3. En el archivo main.cpp colocar la dirección donde se encuentra el archivo programa.txt. La dirección dentro de la función get() es una muestra, no funciona.
 4. Ejecutar y se imprimirá en pantalla:
   - Todos los tokens y errores del scanner. 
-  - Todos los tokens que recibe el parser y verifica. Cuando encuentre un error, lo imprime y termina el proceso.
-  - Si no encontró ningún error, imprime el árbol de parseo.
+  - Todos los tokens que recibe el parser y verifica. 
+  - Cuando termine el parser imprimirá la lista de errores en caso la lista no está vacía.
+  - Si la lista está vacía, imprime el árbol de parseo.
 
-##### NOTA: En el archivo example_output.txt, se encuentra un ejemplo de lo que se imprime después de ejecutar según las indicaciones. Además, se utilizó el ejemplo que está en programa.txt para el proceso.
+##### NOTA: En los archivos example_output.txt y example_error_output.txt, se encuentran los ejemplos de lo que se imprime después de ejecutar según las indicaciones. EL primer .txt es el ejemplo del caso cuando el programa está correcto e imprime el árbol de parseo. Mientras que, el segundo .txt es el ejemplo para el caso cuando la lista de errores no está vacía. Además, se utilizaron los ejemplos que están en programa.txt para el proceso. Probar cada programa por separado.
