@@ -1,66 +1,66 @@
 ------------------------------SCANNER------------------------------
-<PROGRAM,program> <ID,forLoop> <DEL_SEMC,;> <VAR,var> <ID,a> <DEL_COL,:> <ID,integer> <DEL_SEMC,;> <BEGIN,begin> <FOR,for> <ID,a> <OP_ASIG,:=> <NUM_INT,10.000000> <TO,to> <NUM_INT,20.000000> <DO,do> <BEGIN,begin> <ID,writeln> <DEL_OP,(> <STRING,value of a: > <DEL_COM,,> <ID,a> <DEL_CP,)> <DEL_SEMC,;> <END,end> <DEL_SEMC,;> <END,end> <OP_DOT,.> <EOF,$>
+<PROGRAM,program> <ID,Test2> <DEL_SEMC,;> <CONST,const> <ID,num1> <OP_EQU,=> <NUM_INT,11.000000> <DEL_SEMC,;> <ID,num2> <OP_EQU,=> <NUM_INT,27.000000> <DEL_SEMC,;> <VAR,var> <ID,sum> <DEL_COL,:> <ID,integer> <DEL_SEMC,;> <BEGIN,begin> <ID,sum> <OP_ASIG,:=> <ID,num1> <OP_SUM,+> <ID,num2> <DEL_SEMC,;> <ID,Writeln> <DEL_OP,(> <ID,sum> <DEL_CP,)> <DEL_SEMC,;> <END,end> <OP_DOT,.> <EOF,$>
 ------------------------------PARSER------------------------------
 PROGRAM    program
-ID    forLoop
+ID    Test2
+DEL_SEMC    ;
+CONST    const
+ID    num1
+OP_EQU    =
+NUM_INT    11.000000
+DEL_SEMC    ;
+ID    num2
+OP_EQU    =
+NUM_INT    27.000000
 DEL_SEMC    ;
 VAR    var
-ID    a
+ID    sum
 DEL_COL    :
 ID    integer
 DEL_SEMC    ;
 BEGIN    begin
-FOR    for
-ID    a
+ID    sum
 OP_ASIG    :=
-NUM_INT    10.000000
-TO    to
-NUM_INT    20.000000
-DO    do
-BEGIN    begin
-ID    writeln
-DEL_OP    (
-STRING    value of a:
-DEL_COM    ,
-ID    a
-DEL_CP    )
+ID    num1
+OP_SUM    +
+ID    num2
 DEL_SEMC    ;
-END    end
+ID    Writeln
+DEL_OP    (
+ID    sum
+DEL_CP    )
 DEL_SEMC    ;
 END    end
 OP_DOT    .
 EOF    $
 ------------------------------PARSE_TREE------------------------------
-|program id ; VarBlock MainCode
-             |var VarList
-                 |NameList : TypeDecl ;
-                 |id
-                            |SimpleDecl
-                            |integer
-                      |begin StmtList end .
-                            |Stmt
-                            |ForBlock
-                            |for Assign TO Expr do begin StmtList end ;
-                                |id := Expr
-                                      |Expr_
-                                      |Term
-                                      |Factor
-                                      |v_NUM_INT
-                                          |Expr_
-                                          |Term
-                                          |Factor
-                                          |v_NUM_INT
-                                                        |Stmt
-                                                        |Proc ;
-                                                        |writeln Args
-                                                                |( ExprList )
-                                                                  |Expr , ExprList
-                                                                  |Expr_
-                                                                  |Term
-                                                                  |Factor
-                                                                  |v_STRING
-                                                                         |Expr
-                                                                         |Expr_
-                                                                         |Term
-                                                                         |Factor
-                                                                         |v_ID
+|program id ; const ConstList VarBlock MainCode
+                   |id = Value ; ConstList
+                        |v_NUM_INT
+                                |id = Value ;
+                                     |v_NUM_INT
+                             |var VarList
+                                 |NameList : TypeDecl ;
+                                 |id
+                                            |SimpleDecl
+                                            |integer
+                                      |begin StmtList end .
+                                            |Stmt StmtList
+                                            |Assign ;
+                                            |id := Expr
+                                                  |Expr_
+                                                  |Term OP_SUM Expr_
+                                                  |Factor
+                                                  |v_ID
+                                                              |Term
+                                                              |Factor
+                                                              |v_ID
+                                                 |Stmt
+                                                 |Proc ;
+                                                 |Writeln Args
+                                                         |( ExprList )
+                                                           |Expr
+                                                           |Expr_
+                                                           |Term
+                                                           |Factor
+                                                           |v_ID
