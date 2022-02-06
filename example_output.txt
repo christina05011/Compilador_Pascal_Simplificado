@@ -46,8 +46,8 @@ EOF    $
                                             |integer
                                       |begin StmtList end .
                                             |Stmt StmtList
-                                            |Assign ;
-                                            |id := Expr
+                                            |Assign
+                                            |id := Expr ;
                                                   |Expr_
                                                   |Term OP_SUM Expr_
                                                   |Factor
@@ -56,8 +56,8 @@ EOF    $
                                                               |Factor
                                                               |v_ID
                                                  |Stmt
-                                                 |Proc ;
-                                                 |Writeln Args
+                                                 |Proc
+                                                 |Writeln Args ;
                                                          |( ExprList )
                                                            |Expr
                                                            |Expr_
