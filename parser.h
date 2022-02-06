@@ -124,10 +124,10 @@ struct parser_class {
         if (token_tag[0] == "ID") return ConstList(new_Dad); //Recursion
     }
     void Value(PNode* dad) { //Value → INTEGER | REAL | STRING 
-        add_node(dad, "Value"); //Follow is ';',:,],),MUL,DIV,MOD,AND,+,-,OR,=,<>,<,<=,>=,>,',',OF,DO,THEN,break,continue,END,UNTIL,READ,READLN,WRITE,WRITELN,IF,ELSE,REPEAT,WHILE,FOR,CASE,GOTO,ID,TO,DOWNTO
+        add_node(dad, "Value"); //Follow is ';',:,],),MUL,DIV,MOD,AND,+,-,OR,=,<>,<,<=,>=,>,',',OF,DO,THEN,break,continue,END,UNTIL,READ,READLN,WRITE,WRITELN,IF,REPEAT,WHILE,FOR,CASE,GOTO,ID,TO,DOWNTO
         PNode* new_Dad = dad->nodes.back();
         string follows[] = { "DEL_COL","DEL_CBT","OP_MULT","OP_DIV","OP_DIV_ENT","OP_MOD","OP_AND","OP_SUM","OP_RES","OP_OR","OP_EQU","OP_NOT_EQU","OP_LT","OP_LE","OP_GE","OP_GT","DEL_COM",
-        "OF","DO","THEN","DEL_SEMC","TO","DOWNTO","ELSE","END","UNTIL","ID","IF","REPEAT","WHILE","FOR","CASE","GOTO","break","continue","read","readln","write","Write","writeln","Writeln" };
+        "OF","DO","THEN","DEL_SEMC","TO","DOWNTO","END","UNTIL","ID","IF","REPEAT","WHILE","FOR","CASE","GOTO","break","continue","read","readln","write","Write","writeln","Writeln" };
         if (token_tag[0] != "NUM_INT" && token_tag[0] != "NUM_REAL" && token_tag[0] != "STRING")
             return add_error("ErrorValue: Find '" + token_tag[1] + "' but it must be 'v_int' or 'v_real' or 'v_string'.", follows, follows->size());
         add_node(new_Dad, "v_" + token_tag[0]); next_token();
@@ -328,33 +328,33 @@ struct parser_class {
         return ParamList(new_Dad); //Recursion
     }
     void StmtList(PNode* dad) { //StmtList → Stmt StmtList | e
-        add_node(dad, "StmtList"); //Follow is ;,ELSE,END,UNTIL,BREAK,CONTINUE,ID,READ,READLN,WRITE,WRITELN,IF,REPEAT,WHILE,FOR,CASE,GOTO
+        add_node(dad, "StmtList"); //Follow is ;,END,UNTIL,BREAK,CONTINUE,ID,READ,READLN,WRITE,WRITELN,IF,REPEAT,WHILE,FOR,CASE,GOTO
         PNode* new_Dad = dad->nodes.back();
         Stmt(new_Dad);
         if (token_tag[0] == "ID" || token_tag[1] == "read" || token_tag[1] == "readln" || token_tag[1] == "write" || token_tag[1] == "writeln" ||
             token_tag[0] == "IF" || token_tag[0] == "ELSE" || token_tag[0] == "REPEAT" || token_tag[0] == "WHILE" || token_tag[0] == "FOR" ||
             token_tag[0] == "CASE" || token_tag[0] == "GOTO" || token_tag[1] == "Write" || token_tag[1] == "Writeln") return StmtList(new_Dad); //Recursion
     }
-    void Stmt(PNode* dad) { //Stmt → break; | continue; | Assign; | Proc; | IfBlock | RepeatBlock; | WhileBlock | ForBlock | CaseBlock | GotoBlock;    //GotoBlock → GOTO INTEGER
-        add_node(dad, "Stmt"); //Follow is ;,ELSE,END,UNTIL,BREAK,CONTINUE,ID,READ,READLN,WRITE,WRITELN,IF,REPEAT,WHILE,FOR,CASE,GOTO
+    void Stmt(PNode* dad) { //Stmt → break; | continue; | Assign | Proc | IfBlock ElseBlock| RepeatBlock; | WhileBlock | ForBlock | CaseBlock | GotoBlock    //GotoBlock → GOTO INTEGER;
+        add_node(dad, "Stmt"); //Follow is ;,END,UNTIL,BREAK,CONTINUE,ID,READ,READLN,WRITE,WRITELN,IF,REPEAT,WHILE,FOR,CASE,GOTO
         PNode* new_Dad = dad->nodes.back();
-        string follows[] = { "DEL_SEMC","TO","DOWNTO","ELSE","END","UNTIL","ID","IF","REPEAT","WHILE","FOR","CASE","GOTO","break","continue","read","readln","write","Write","writeln","Writeln" };
+        string follows[] = { "DEL_SEMC","TO","DOWNTO","END","UNTIL","ID","IF","REPEAT","WHILE","FOR","CASE","GOTO","break","continue","read","readln","write","Write","writeln","Writeln" };
         if (token_tag[1] == "break" || token_tag[1] == "continue") {
             add_node(new_Dad, token_tag[1]); next_token();
             if (token_tag[0] != "DEL_SEMC") return add_error("ErrorStmt: Find '" + token_tag[1] + "' but it must be ';'.", follows, follows->size());
             add_node(new_Dad, ";"); next_token(); return;
         }
-        if (token_tag[1] == "read" || token_tag[1] == "readln" || token_tag[1] == "write" || token_tag[1] == "writeln" || token_tag[1] == "Write" || token_tag[1] == "Writeln") {
-            Proc(new_Dad); //already next token
-            if (token_tag[0] != "DEL_SEMC") return add_error("ErrorStmt: Find '" + token_tag[1] + "' but it must be ';'.", follows, follows->size());
-            add_node(new_Dad, ";"); next_token(); return;
+        if (token_tag[1] == "read" || token_tag[1] == "readln" || token_tag[1] == "write" || token_tag[1] == "writeln" || token_tag[1] == "Write" || token_tag[1] == "Writeln") 
+            return Proc(new_Dad); //already next token
+        if (token_tag[0] == "ID") return Assign(new_Dad); //already next token
+        if (token_tag[0] == "IF") {
+            IfBlock(new_Dad); //already next token
+            if (token_tag[0] == "ELSE") return ElseBlock(new_Dad);
+            else {
+                if (token_tag[0] != "DEL_SEMC") return add_error("ErrorIfBlock: Find '" + token_tag[1] + "' but it must be ';'.", follows, follows->size());
+                add_node(new_Dad, ";"); next_token();
+            } return;
         }
-        if (token_tag[0] == "ID") {
-            Assign(new_Dad); //already next token
-            if (token_tag[0] != "DEL_SEMC") return add_error("ErrorStmt: Find '" + token_tag[1] + "' but it must be ';'.", follows, follows->size());
-            add_node(new_Dad, ";"); next_token(); return;
-        }
-        if (token_tag[0] == "IF") return IfBlock(new_Dad);
         if (token_tag[0] == "REPEAT") {
             RepeatBlock(new_Dad); //already next token
             if (token_tag[0] != "DEL_SEMC") return add_error("ErrorStmt: Find '" + token_tag[1] + "' but it must be ';'.", follows, follows->size());
@@ -363,7 +363,7 @@ struct parser_class {
         if (token_tag[0] == "WHILE") return WhileBlock(new_Dad);
         if (token_tag[0] == "FOR") return ForBlock(new_Dad);
         if (token_tag[0] == "CASE") return CaseBlock(new_Dad);
-        if (token_tag[0] == "GOTO") {  //GotoBlock;  //GotoBlock → GOTO INTEGER
+        if (token_tag[0] == "GOTO") {  //GotoBlock  //GotoBlock → GOTO INTEGER;
             add_node(new_Dad, "GotoBlock");
             new_Dad = new_Dad->nodes.back();
             add_node(new_Dad, "goto"); next_token();
@@ -374,24 +374,28 @@ struct parser_class {
         }
         return add_error("ErrorStmt: Find '" + token_tag[1] + "' but it must be 'id' or 'read' or 'readln' or 'write' or 'Write' or 'writeln' or 'Writeln' or 'if' or 'else' or 'repeat' or 'while' or 'for' or 'case' or 'goto'.", follows, follows->size());
     }
-    void Assign(PNode* dad) { //Assign → ID := Expr
-        add_node(dad, "Assign"); //Follow is TO,DOWNTO,;
+    void Assign(PNode* dad) { //Assign → ID := Expr;
+        add_node(dad, "Assign"); //Follow is ;,END,UNTIL,BREAK,CONTINUE,ID,READ,READLN,WRITE,WRITELN,IF,REPEAT,WHILE,FOR,CASE,GOTO
         PNode* new_Dad = dad->nodes.back();
-        string follows[] = { "DEL_SEMC" ,"TO","DOWNTO" };
+        string follows[] = { "IF","END","DEL_SEMC","TO","DOWNTO","UNTIL","ID","REPEAT","WHILE","FOR","CASE","GOTO","break","continue","read","readln","write","Write","writeln","Writeln" };
         if (token_tag[0] != "ID") return add_error("ErrorAssign: Find '" + token_tag[1] + "' but it must be 'id'.", follows, follows->size());
         add_node(new_Dad, "id"); next_token();
         if (token_tag[0] != "OP_ASIG") return add_error("ErrorAssign: Find '" + token_tag[1] + "' but it must be ':='.", follows, follows->size());
         add_node(new_Dad, ":="); next_token();
-        return Expr(new_Dad);
+        Expr(new_Dad);
+        if (token_tag[0] != "DEL_SEMC") return add_error("ErrorAssign: Find '" + token_tag[1] + "' but it must be ';'.", follows, follows->size());
+        add_node(new_Dad, ";"); next_token();
     }
-    void Proc(PNode* dad) { //Proc → READ args | READLN args | WRITE args | WRITELN args
-        add_node(dad, "Proc"); //Follow is ;
+    void Proc(PNode* dad) { //Proc → READ args; | READLN args; | WRITE args; | WRITELN args;
+        add_node(dad, "Proc"); //Follow is ;,END,UNTIL,BREAK,CONTINUE,ID,READ,READLN,WRITE,WRITELN,IF,REPEAT,WHILE,FOR,CASE,GOTO
         PNode* new_Dad = dad->nodes.back();
-        string follows[] = { "DEL_SEMC" };
+        string follows[] = { "END","TO","DOWNTO","DEL_SEMC","UNTIL","ID","IF","REPEAT","WHILE","FOR","CASE","GOTO","break","continue","read","readln","write","Write","writeln","Writeln" };
         if (token_tag[1] != "read" && token_tag[1] != "readln" && token_tag[1] != "write" && token_tag[1] != "Write" && token_tag[1] != "writeln" && token_tag[1] != "Writeln")
             return add_error("ErrorProc: Find '" + token_tag[1] + "' but it must be 'read' or 'readln' or 'write' or 'Write' or 'writeln' or 'Writeln'.", follows, 1);
         add_node(new_Dad, token_tag[1]); next_token();
-        return args(new_Dad);
+        args(new_Dad);
+        if (token_tag[0] != "DEL_SEMC") return add_error("ErrorProc: Find '" + token_tag[1] + "' but it must be ';'.", follows, follows->size());
+        add_node(new_Dad, ";"); next_token();
     }
     void args(PNode* dad) { //args → (ExprList)
         add_node(dad, "Args"); //Follow is ;
@@ -403,47 +407,39 @@ struct parser_class {
         if (token_tag[0] != "DEL_CP") return add_error("ErrorArgs: Find '" + token_tag[1] + "' but it must be ')'.", follows, 1);
         add_node(new_Dad, ")"); next_token();
     }
-    void IfBlock(PNode* dad) { //IfBlock → IF Expr THEN /'BEGIN'/|e StmtList /'END'/|e ElseBlock|e
-        add_node(dad, "IfBlock"); //Follow is ;,ELSE,END,UNTIL,BREAK,CONTINUE,ID,READ,READLN,WRITE,WRITELN,IF,REPEAT,WHILE,FOR,CASE,GOTO
+    void IfBlock(PNode* dad) { //IfBlock → IF Expr THEN BEGIN StmtList END ElseBlock
+        add_node(dad, "IfBlock"); //Follow is ELSE | ;,END,UNTIL,BREAK,CONTINUE,ID,READ,READLN,WRITE,WRITELN,IF,REPEAT,WHILE,FOR,CASE,GOTO 
         PNode* new_Dad = dad->nodes.back();
-        string follows[] = { "ELSE","DEL_SEMC","TO","DOWNTO","END","UNTIL","ID","IF","REPEAT","WHILE","FOR","CASE","GOTO","break","continue","read","readln", "write", "Write", "writeln", "Writeln" };
+        string follows[] = { "ELSE" };//,"DEL_SEMC","TO","DOWNTO","END","UNTIL","ID","IF","REPEAT","WHILE","FOR","CASE","GOTO","break","continue","read","readln", "write", "Write", "writeln", "Writeln" };
         if (token_tag[0] != "IF") return add_error("ErrorIfBlock: Find '" + token_tag[1] + "' but it must be 'if'.", follows, follows->size());
-        add_node(new_Dad, "if"); next_token();
+        add_node(new_Dad, "if"); next_token(); 
         Expr(new_Dad);
-        if (token_tag[0] != "THEN") add_error("ErrorIfBlock: Find '" + token_tag[1] + "' but it must be 'then'.", follows, follows->size());
-        else { add_node(new_Dad, "then"); next_token(); }
-        bool is_begin = 0; 
-        if (token_tag[0] == "BEGIN") add_node(new_Dad, "begin"), next_token(), is_begin = 1; //e
+        if (token_tag[0] != "THEN") return add_error("ErrorIfBlock: Find '" + token_tag[1] + "' but it must be 'then'.", follows, follows->size());
+        add_node(new_Dad, "then"); next_token(); 
+        if (token_tag[0] != "BEGIN") return add_error("ErrorIfBlock: Find '" + token_tag[1] + "' but it must be 'begin'.", follows, follows->size());
+        add_node(new_Dad, "begin"); next_token(); 
         StmtList(new_Dad);
-        if (is_begin) { //e
-            if (token_tag[0] != "END") return add_error("ErrorIfBlock: Find '" + token_tag[1] + "' but it must be 'end'.", follows, follows->size());
-            add_node(new_Dad, "end"), next_token();
-            if (token_tag[0] != "ELSE" && token_tag[0] != "DEL_SEMC") return add_error("ErrorIfBlock: Find '" + token_tag[1] + "' but it must be ';' or 'else'.", follows, follows->size());
-            if (token_tag[0] == "ELSE") return ElseBlock(new_Dad);
-            add_node(new_Dad, ";"), next_token(); return;
-        }
-        if(token_tag[0] == "ELSE") ElseBlock(new_Dad);
+        if (token_tag[0] != "END") return add_error("ErrorIfBlock: Find '" + token_tag[1] + "' but it must be 'end'.", follows, follows->size());
+        add_node(new_Dad, "end"), next_token(); 
     }
-    void ElseBlock(PNode* dad) { //ElseBlock → ELSE /'BEGIN'/|e StmtList /'END'/|e ;
-        //Follow is ;,ELSE,END,UNTIL,BREAK,CONTINUE,ID,READ,READLN,WRITE,WRITELN,IF,REPEAT,WHILE,FOR,CASE,GOTO
+    void ElseBlock(PNode* dad) { //ElseBlock → ELSE BEGIN StmtList END ;
+        //Follow is ;,END,UNTIL,BREAK,CONTINUE,ID,READ,READLN,WRITE,WRITELN,IF,REPEAT,WHILE,FOR,CASE,GOTO
         add_node(dad, "ElseBlock");
         PNode* new_Dad = dad->nodes.back();
-        string follows[] = { "DEL_SEMC","TO","DOWNTO","ELSE","END","UNTIL","ID","IF","REPEAT","WHILE","FOR","CASE","GOTO","break","continue","read","readln", "write", "Write", "writeln", "Writeln" };
+        string follows[] = { "DEL_SEMC","TO","DOWNTO","END","UNTIL","ID","IF","REPEAT","WHILE","FOR","CASE","GOTO","break","continue","read","readln", "write", "Write", "writeln", "Writeln" }; 
         add_node(new_Dad, "else"); next_token();
-        bool is_begin = 0;
-        if (token_tag[0] == "BEGIN") add_node(new_Dad, "begin"), next_token(), is_begin = 1; //e
+        if (token_tag[0] != "BEGIN") return add_error("ErrorElseBlock: Find '" + token_tag[1] + "' but it must be 'begin'.", follows, follows->size());
+        add_node(new_Dad, "begin"); next_token();
         StmtList(new_Dad);
-        if (is_begin) { //e
-            if (token_tag[0] != "END") return add_error("ErrorElseBlock: Find '" + token_tag[1] + "' but it must be 'end'.", follows, follows->size());
-            add_node(new_Dad, "end"), next_token();
-            if (token_tag[0] != "DEL_SEMC") return add_error("ErrorElseBlock: Find '" + token_tag[1] + "' but it must be ';'.", follows, follows->size());
-            add_node(new_Dad, ";"); next_token();
-        }
+        if (token_tag[0] != "END") return add_error("ErrorElseBlock: Find '" + token_tag[1] + "' but it must be 'end'.", follows, follows->size());
+        add_node(new_Dad, "end"), next_token();
+        if (token_tag[0] != "DEL_SEMC") return add_error("ErrorElseBlock: Find '" + token_tag[1] + "' but it must be ';'.", follows, follows->size());
+        add_node(new_Dad, ";"); next_token();
     }
     void RepeatBlock(PNode* dad) { //RepeatBlock → REPEAT StmtList UNTIL Expr
-        add_node(dad, "RepeatBlock"); //Follow is ;,ELSE,END,UNTIL,BREAK,CONTINUE,ID,READ,READLN,WRITE,WRITELN,IF,REPEAT,WHILE,FOR,CASE,GOTO
+        add_node(dad, "RepeatBlock"); //Follow is ;,END,UNTIL,BREAK,CONTINUE,ID,READ,READLN,WRITE,WRITELN,IF,REPEAT,WHILE,FOR,CASE,GOTO
         PNode* new_Dad = dad->nodes.back();
-        string follows[] = { "DEL_SEMC","TO","DOWNTO","ELSE","END","UNTIL","ID","IF","REPEAT","WHILE","FOR","CASE","GOTO","break","continue","read","readln", "write", "Write", "writeln", "Writeln" };
+        string follows[] = { "DEL_SEMC","TO","DOWNTO","END","UNTIL","ID","IF","REPEAT","WHILE","FOR","CASE","GOTO","break","continue","read","readln", "write", "Write", "writeln", "Writeln" };
         if (token_tag[0] != "REPEAT") return add_error("ErrorRepeatBlock: Find '" + token_tag[1] + "' but it must be 'repeat'.", follows, follows->size());
         add_node(new_Dad, "repeat"); next_token();
         StmtList(new_Dad);
@@ -451,51 +447,51 @@ struct parser_class {
         add_node(new_Dad, "until"); next_token();
         return Expr(new_Dad);
     }
-    void WhileBlock(PNode* dad) { //WhileBlock → WHILE Expr DO /'BEGIN'/|e StmtList /'END'/|e ;
-        add_node(dad, "WhileBlock"); //Follow is ;,ELSE,END,UNTIL,BREAK,CONTINUE,ID,READ,READLN,WRITE,WRITELN,IF,REPEAT,WHILE,FOR,CASE,GOTO
+    void WhileBlock(PNode* dad) { //WhileBlock → WHILE Expr DO BEGIN StmtList END ;
+        add_node(dad, "WhileBlock"); //Follow is ;,END,UNTIL,BREAK,CONTINUE,ID,READ,READLN,WRITE,WRITELN,IF,REPEAT,WHILE,FOR,CASE,GOTO
         PNode* new_Dad = dad->nodes.back();
-        string follows[] = { "DEL_SEMC","TO","DOWNTO","ELSE","END","UNTIL","ID","IF","REPEAT","WHILE","FOR","CASE","GOTO","break","continue","read","readln", "write", "Write", "writeln", "Writeln" };
+        string follows[] = { "DEL_SEMC","TO","DOWNTO","END","UNTIL","ID","IF","REPEAT","WHILE","FOR","CASE","GOTO","break","continue","read","readln", "write", "Write", "writeln", "Writeln" };
         if (token_tag[0] != "WHILE") return add_error("ErrorWhileBlock: Find '" + token_tag[1] + "' but it must be 'while'.", follows, follows->size());
         add_node(new_Dad, "while"); next_token();
         Expr(new_Dad);
         if (token_tag[0] != "DO") return add_error("ErrorWhileBlock: Find '" + token_tag[1] + "' but it must be 'do'.", follows, follows->size());
         add_node(new_Dad, "do"); next_token();
-        bool is_begin = 0;
-        if (token_tag[0] == "BEGIN") add_node(new_Dad, "begin"), next_token(), is_begin = 1; //e
+        if (token_tag[0] != "BEGIN") return add_error("ErrorWhileBlock: Find '" + token_tag[1] + "' but it must be 'begin'.", follows, follows->size());
+        add_node(new_Dad, "begin"); next_token();
         StmtList(new_Dad);
-        if (is_begin) { //e
-            if (token_tag[0] != "END") return add_error("ErrorWhileBlock: Find '" + token_tag[1] + "' but it must be 'end'.", follows, follows->size());
-            add_node(new_Dad, "end"), next_token();
-            if (token_tag[0] != "DEL_SEMC") return add_error("ErrorWhileBlock: Find '" + token_tag[1] + "' but it must be ';'.", follows, follows->size());
-            add_node(new_Dad, ";"); next_token();
-        }
+        if (token_tag[0] != "END") return add_error("ErrorWhileBlock: Find '" + token_tag[1] + "' but it must be 'end'.", follows, follows->size());
+        add_node(new_Dad, "end"), next_token();
+        if (token_tag[0] != "DEL_SEMC") return add_error("ErrorWhileBlock: Find '" + token_tag[1] + "' but it must be ';'.", follows, follows->size());
+        add_node(new_Dad, ";"); next_token();
     }
-    void ForBlock(PNode* dad) { //ForBlock → FOR Assign Direction Expr DO /'BEGIN'/|e StmtList /'END'/|e ; ..... //Direction → TO | DOWNTO
-        add_node(dad, "ForBlock"); //Follow is ;,ELSE,END,UNTIL,BREAK,CONTINUE,ID,READ,READLN,WRITE,WRITELN,IF,REPEAT,WHILE,FOR,CASE,GOTO
+    void ForBlock(PNode* dad) { //ForBlock → FOR id := Value Direction Expr DO BEGIN StmtList END ; ..... //Direction → TO | DOWNTO
+        add_node(dad, "ForBlock"); //Follow is ;,END,UNTIL,BREAK,CONTINUE,ID,READ,READLN,WRITE,WRITELN,IF,REPEAT,WHILE,FOR,CASE,GOTO
         PNode* new_Dad = dad->nodes.back();
-        string follows[] = { "DEL_SEMC","TO","DOWNTO","ELSE","END","UNTIL","ID","IF","REPEAT","WHILE","FOR","CASE","GOTO","break","continue","read","readln", "write", "Write", "writeln", "Writeln" };
+        string follows[] = { "DEL_SEMC","TO","DOWNTO","END","UNTIL","ID","IF","REPEAT","WHILE","FOR","CASE","GOTO","break","continue","read","readln", "write", "Write", "writeln", "Writeln" };
         if (token_tag[0] != "FOR") return add_error("ErrorForBlock: Find '" + token_tag[1] + "' but it must be 'for'.", follows, follows->size());
         add_node(new_Dad, "for"); next_token();
-        Assign(new_Dad);
+        if (token_tag[0] != "ID") return add_error("ErrorAssign: Find '" + token_tag[1] + "' but it must be 'id'.", follows, follows->size());
+        add_node(new_Dad, "id"); next_token();
+        if (token_tag[0] != "OP_ASIG") return add_error("ErrorAssign: Find '" + token_tag[1] + "' but it must be ':='.", follows, follows->size());
+        add_node(new_Dad, ":="); next_token();
+        Value(new_Dad);
         if (token_tag[0] != "TO" && token_tag[0] != "DOWNTO") return add_error("ErrorForBlock: Find '" + token_tag[1] + "' but it must be 'to' or 'downto'.", follows, follows->size());
         add_node(new_Dad, token_tag[0]); next_token();
         Expr(new_Dad);
         if (token_tag[0] != "DO") return add_error("ErrorForBlock: Find '" + token_tag[1] + "' but it must be 'do'.", follows, follows->size());
         add_node(new_Dad, "do"); next_token();
-        bool is_begin = 0;
-        if (token_tag[0] == "BEGIN") add_node(new_Dad, "begin"), next_token(), is_begin = 1; //e
+        if (token_tag[0] != "BEGIN") return add_error("ErrorForBlock: Find '" + token_tag[1] + "' but it must be 'begin'.", follows, follows->size());
+        add_node(new_Dad, "begin"); next_token();
         StmtList(new_Dad);
-        if (is_begin) { //e
-            if(token_tag[0] != "END") return add_error("ErrorForBlock: Find '" + token_tag[1] + "' but it must be 'end'.", follows, follows->size());
-            add_node(new_Dad, "end"), next_token();
-            if (token_tag[0] != "DEL_SEMC") return add_error("ErrorForBlock: Find '" + token_tag[1] + "' but it must be ';'.", follows, follows->size());
-            add_node(new_Dad, ";"); next_token();
-        }
+        if (token_tag[0] != "END") return add_error("ErrorForBlock: Find '" + token_tag[1] + "' but it must be 'end'.", follows, follows->size());
+        add_node(new_Dad, "end"), next_token();
+        if (token_tag[0] != "DEL_SEMC") return add_error("ErrorForBlock: Find '" + token_tag[1] + "' but it must be ';'.", follows, follows->size());
+        add_node(new_Dad, ";"); next_token();
     }
     void CaseBlock(PNode* dad) { //CaseBlock → CASE Expr OF CaseList END
-        add_node(dad, "CaseBlock"); //Follow is ;,ELSE,END,UNTIL,BREAK,CONTINUE,ID,READ,READLN,WRITE,WRITELN,IF,REPEAT,WHILE,FOR,CASE,GOTO
+        add_node(dad, "CaseBlock"); //Follow is ;,END,UNTIL,BREAK,CONTINUE,ID,READ,READLN,WRITE,WRITELN,IF,REPEAT,WHILE,FOR,CASE,GOTO
         PNode* new_Dad = dad->nodes.back();
-        string follows[] = { "DEL_SEMC","TO","DOWNTO","ELSE","END","UNTIL","ID","IF","REPEAT","WHILE","FOR","CASE","GOTO","break","continue","read","readln", "write", "Write", "writeln", "Writeln" };
+        string follows[] = { "DEL_SEMC","TO","DOWNTO","END","UNTIL","ID","IF","REPEAT","WHILE","FOR","CASE","GOTO","break","continue","read","readln", "write", "Write", "writeln", "Writeln" };
         if (token_tag[0] != "CASE") return add_error("ErrorCaseBlock: Find '" + token_tag[1] + "' but it must be 'case'.", follows, follows->size());
         add_node(new_Dad, "case"); next_token();
         Expr(new_Dad);
@@ -534,7 +530,7 @@ struct parser_class {
         return ExprList(new_Dad); //Recursion
     }
     void Expr(PNode* dad) { //Expr → Expr_ RelOp Expr | Expr_
-        add_node(dad, "Expr"); //Follow is ',',OF,DO,THEN,';',TO,DOWNTO,ELSE,END,UNTIL,BREAK,CONTINUE,ID,READ,READLN,WRITE,WRITELN,IF,REPEAT,WHILE,FOR,CASE,GOTO
+        add_node(dad, "Expr"); //Follow is ',',OF,DO,THEN,';',TO,DOWNTO,END,UNTIL,BREAK,CONTINUE,ID,READ,READLN,WRITE,WRITELN,IF,REPEAT,WHILE,FOR,CASE,GOTO
         PNode* new_Dad = dad->nodes.back();
         Expr_(new_Dad);
         if (token_tag[0] != "OP_EQU" && token_tag[0] != "OP_NOT_EQU" && token_tag[0] != "OP_LT" && token_tag[0] != "OP_LE" && token_tag[0] != "OP_GE" && token_tag[0] != "OP_GT")
@@ -551,7 +547,7 @@ struct parser_class {
         add_node(new_Dad, token_tag[0]); next_token();
     }
     void Expr_(PNode* dad) { //Expr_ → Term + Expr_ | Term - Expr_ | Term OR Expr_ | Term
-        add_node(dad, "Expr_"); //Follow is =,<>,<,<=,>=,>,',',OF,DO,THEN,';',TO,DOWNTO,ELSE,END,UNTIL,BREAK,CONTINUE,ID,READ,READLN,WRITE,WRITELN,IF,REPEAT,WHILE,FOR,CASE,GOTO
+        add_node(dad, "Expr_"); //Follow is =,<>,<,<=,>=,>,',',OF,DO,THEN,';',TO,DOWNTO,END,UNTIL,BREAK,CONTINUE,ID,READ,READLN,WRITE,WRITELN,IF,REPEAT,WHILE,FOR,CASE,GOTO
         PNode* new_Dad = dad->nodes.back();
         Term(new_Dad);
         if (token_tag[0] != "OP_SUM" && token_tag[0] != "OP_RES" && token_tag[0] != "OP_OR")
@@ -560,7 +556,7 @@ struct parser_class {
         return Expr_(new_Dad); //Recursion
     }
     void Term(PNode* dad) { //Term → Factor MUL|DIV|MOD|AND Term    |    Factor
-        add_node(dad, "Term"); //Follow is +,-,OR,=,<>,<,<=,>=,>,',',OF,DO,THEN,';',TO,DOWNTO,ELSE,END,UNTIL,BREAK,CONTINUE,ID,READ,READLN,WRITE,WRITELN,IF,REPEAT,WHILE,FOR,CASE,GOTO
+        add_node(dad, "Term"); //Follow is +,-,OR,=,<>,<,<=,>=,>,',',OF,DO,THEN,';',TO,DOWNTO,END,UNTIL,BREAK,CONTINUE,ID,READ,READLN,WRITE,WRITELN,IF,REPEAT,WHILE,FOR,CASE,GOTO
         PNode* new_Dad = dad->nodes.back();
         Factor(new_Dad);
         if (token_tag[0] != "OP_MULT" && token_tag[0] != "OP_DIV" && token_tag[0] != "OP_DIV_ENT" && token_tag[0] != "OP_MOD" && token_tag[0] != "OP_AND")
@@ -569,10 +565,10 @@ struct parser_class {
         return Term(new_Dad); //Recursion
     }
     void Factor(PNode* dad) { //Factor → ID | Value | FUNCTION(ExprList) | (ExprList) | NOT Factor | MINUS Factor
-        add_node(dad, "Factor"); //Follow is MUL,DIV,MOD,AND,+,-,OR,=,<>,<,<=,>=,>,',',OF,DO,THEN,';',TO,DOWNTO,ELSE,END,UNTIL,BREAK,CONTINUE,ID,READ,READLN,WRITE,WRITELN,IF,REPEAT,WHILE,FOR,CASE,GOTO
+        add_node(dad, "Factor"); //Follow is MUL,DIV,MOD,AND,+,-,OR,=,<>,<,<=,>=,>,',',OF,DO,THEN,';',TO,DOWNTO,END,UNTIL,BREAK,CONTINUE,ID,READ,READLN,WRITE,WRITELN,IF,REPEAT,WHILE,FOR,CASE,GOTO
         PNode* new_Dad = dad->nodes.back();
         string follows[] = { "OP_MULT","OP_DIV","OP_DIV_ENT","OP_MOD","OP_AND","OP_SUM","OP_RES","OP_OR","OP_EQU","OP_NOT_EQU","OP_LT","OP_LE","OP_GE","OP_GT","DEL_COM",
-        "OF","DO","THEN","DEL_SEMC","TO","DOWNTO","ELSE","END","UNTIL","ID","IF","REPEAT","WHILE","FOR","CASE","GOTO","break","continue","read","readln", "write", "Write", "writeln", "Writeln" };
+        "OF","DO","THEN","DEL_SEMC","TO","DOWNTO","END","UNTIL","ID","IF","REPEAT","WHILE","FOR","CASE","GOTO","break","continue","read","readln", "write", "Write", "writeln", "Writeln" };
         if (token_tag[0] == "FUNCTION") { //FUNCTION(ExprList) 
             add_node(new_Dad, "function"); next_token();
             if (token_tag[0] != "DEL_OP") return add_error("ErrorFactor: Find '" + token_tag[1] + "' but it must be '('.", follows, follows->size());
