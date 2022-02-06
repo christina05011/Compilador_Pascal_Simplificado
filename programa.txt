@@ -1,11 +1,21 @@
-program forLoop;
-var
-   a: integer;
+//Correct program to print parse tree
+program Test2;
+const num1 = 11;
+      num2 = 27; 
+var  sum : integer;
 
-begin
-   for a := 10  to 20 do
-   
-   begin
-      writeln('value of a: ', a);
-   end;
+begin 
+	sum := num1 + num2; 
+	Writeln(sum);
+end.
+
+//Buggy program to print error list
+program Test2error;
+const num1 = 11?
+      num2 := 27; 
+var  sum : integer;
+
+begin 
+	sum := num1 + + num2; 
+	Writeln(sum);
 end.
