@@ -1,0 +1,49 @@
+------------------------------SCANNER------------------------------
+<PROGRAM,program> <ID,Test2> <DEL_SEMC,;> <CONST,const> <ID,num1> <OP_EQU,=> <NUM_INT,11> <DEL_SEMC,;> <ID,num2> <OP_EQU,=> <NUM_INT,27> <DEL_SEMC,;> <VAR,var> <ID,sum> <DEL_COL,:> <ID,integer> <DEL_SEMC,;> <BEGIN,begin> <ID,sum> <OP_ASIG,:=> <ID,num1> <OP_SUM,+> <ID,num2> <DEL_SEMC,;> <ID,Writeln> <DEL_OP,(> <ID,sum> <DEL_CP,)> <DEL_SEMC,;> <END,end> <OP_DOT,.> <EOF,$>
+------------------------------PARSER------------------------------
+PROGRAM    program
+ID    Test2
+DEL_SEMC    ;
+CONST    const
+ID    num1
+OP_EQU    =
+NUM_INT    11
+DEL_SEMC    ;
+ID    num2
+OP_EQU    =
+NUM_INT    27
+DEL_SEMC    ;
+VAR    var
+ID    sum
+DEL_COL    :
+ID    integer
+DEL_SEMC    ;
+BEGIN    begin
+ID    sum
+OP_ASIG    :=
+ID    num1
+OP_SUM    +
+ID    num2
+DEL_SEMC    ;
+ID    Writeln
+DEL_OP    (
+ID    sum
+DEL_CP    )
+DEL_SEMC    ;
+END    end
+OP_DOT    .
+EOF    $
+------------------------------CODE_GENERATION_C++------------------------------
+#include <iostream>
+using namespace std;
+void main () {
+const int num1 = 11;
+const int num2 = 27;
+int sum;
+sum = num1 + num2  ;
+cout << ( sum ) << endl;
+
+}
+
+------------------------------RUN_CODE------------------------------
+38
