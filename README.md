@@ -37,22 +37,32 @@ Trabajo Final del Curso de Compiladores
   - parse_tree(): Para imprimir recursivamente el árbol, con un | y con espacios para mostrar donde se encuentra el padre.
   - parser(): Función que llama a la clase parser y verifica según la gramática. Si tiene un error, lo imprime y termina el proceso.
              Si no tiene error, imprime el árbol de parseo.
+  - emit(): Función que almacena en un string el código de Pascal traducido a C++.
+  - run_code(): Función que imprime la traducción a C++, la guarda en el archivo run.h y ejecuta su función runCode().
+
+## Descripción de Implementación de Ejecución de Código
+En el archivo run.h, inicialmente se tiene la función runCode() vacía. Pero cuando el parser guarda el nuevo código generado en C++, esa función tiene el contenido guardado. 
+Por lo cual, cuando la función run_code(), de la estructura Generator, llama a esta función runCode() se ejecuta el código traducido.
              
 2. Datos generales:
-  - Se tiene una estructura para el nodo del árbol, para el árbol y para el parser.
+  - Se tiene una estructura para el nodo del árbol, para el árbol, para el parser, para las variables y para el generador.
   - La estructura parser tiene todas las funciones según la gramática generada (vea grammar.txt).
   - El árbol de parseo continúa hasta que no haya más no-terminales.
   - Incluye la Recuperación de errores: Consume y llama a la función next_token(), mientras no sea parte de los Siguientes(FOLLOW'S). De esa manera pasa a la siguiente producción.
+  - Traducción al lenguaje C++: La estructura Generator tiene la función emit() que permite guardar el código traducido.
+  - Guardar variables: La estructura Data_var tiene string de nombre, tipo, valor y un booleano para saber si es variable o constante. Dentro de la estructura del parser se tiene un vector de esta estructura, para almacenar todas las variables inicializadas o no. Además de una función found() para saber si la variable fue creada (existe).
+  - Ejecutar código: La estructura Generator tiene una función run_code() para imprimir el código traducido y ejecutarlo.
+  - En todas las funciones del parser se verifica si los tipos de variables coinciden. Por ejemplo, si dos variables se comparan, se verifica si ambas son del tipo int, string o double.
 
 ## Instrucciones para Ejecutar
 
-1. Crear un nuevo proyecto con los archivos main.cpp, scanner.h, parser.h y programa.txt.
+1. Crear un nuevo proyecto con los archivos main.cpp, scanner.h, parser.h, run.h y programa.txt.
 2. El archivo programa.txt puede ser modificado (archivo del cual va a leer el scanner).
 3. En el archivo main.cpp colocar la dirección donde se encuentra el archivo programa.txt. La dirección dentro de la función get() es una muestra, no funciona.
 4. Ejecutar y se imprimirá en pantalla:
   - Todos los tokens y errores del scanner. 
   - Todos los tokens que recibe el parser y verifica. 
   - Cuando termine el parser imprimirá la lista de errores en caso la lista no está vacía.
-  - Si la lista está vacía, imprime el árbol de parseo.
+  - Si la lista está vacía, imprime el código generado y traducido a C++, también lo ejecuta. Si se quiere imprimir también el árbol de parseo, descomentar la función print_parse_tree() de la última función parser() en parser.h. 
 
-##### NOTA: En los archivos example_output.txt y example_error_output.txt, se encuentran los ejemplos de lo que se imprime después de ejecutar según las indicaciones. EL primer .txt es el ejemplo del caso cuando el programa está correcto e imprime el árbol de parseo. Mientras que, el segundo .txt es el ejemplo para el caso cuando la lista de errores no está vacía. Además, se utilizaron los ejemplos que están en programa.txt para el proceso. Probar cada programa por separado.
+##### NOTA: En los archivos example_output.txt, example_run_output.txt y example_error_output.txt, se encuentran los ejemplos de lo que se imprime después de ejecutar según las indicaciones. EL primer .txt es el ejemplo del caso cuando el programa está correcto e imprime el árbol de parseo. El segundo, es el ejemplo del caso cuando el programa está correcto y ejecuta el código traducido a C++. Mientras que, el tercero .txt es el ejemplo para el caso cuando la lista de errores no está vacía. Además, se utilizaron los ejemplos que están en programa.txt para el proceso. Probar cada programa por separado.
