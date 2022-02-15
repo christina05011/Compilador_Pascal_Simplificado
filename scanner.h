@@ -117,7 +117,7 @@ pair<int, string> isNumber() {//convert to number
         ch = get_char(); //context fills
     }
     if (ch != '.' || (ch == '.' && peek_char('.')))
-        return pair<int, string>(3, convertNumDouble(context)); //int // if continue ..
+        return pair<int, string>(3, context); //int // if continue ..
     ch = get_char(); //for .
     //For float (with .)
     while (true) {
