@@ -39,11 +39,7 @@ Trabajo Final del Curso de Compiladores
              Si no tiene error, imprime el árbol de parseo.
   - emit(): Función que almacena en un string el código de Pascal traducido a C++.
   - run_code(): Función que imprime la traducción a C++, la guarda en el archivo run.h y ejecuta su función runCode().
-
-## Descripción de Implementación de Ejecución de Código
-En el archivo run.h, inicialmente se tiene la función runCode() vacía. Pero cuando el parser guarda el nuevo código generado en C++, esa función tiene el contenido guardado. 
-Por lo cual, cuando la función run_code(), de la estructura Generator, llama a esta función runCode() se ejecuta el código traducido.
-             
+       
 2. Datos generales:
   - Se tiene una estructura para el nodo del árbol, para el árbol, para el parser, para las variables y para el generador.
   - La estructura parser tiene todas las funciones según la gramática generada (vea grammar.txt).
@@ -53,7 +49,11 @@ Por lo cual, cuando la función run_code(), de la estructura Generator, llama a 
   - Guardar variables: La estructura Data_var tiene string de nombre, tipo, valor y un booleano para saber si es variable o constante. Dentro de la estructura del parser se tiene un vector de esta estructura, para almacenar todas las variables inicializadas o no. Además de una función found() para saber si la variable fue creada (existe).
   - Ejecutar código: La estructura Generator tiene una función run_code() para imprimir el código traducido y ejecutarlo.
   - En todas las funciones del parser se verifica si los tipos de variables coinciden. Por ejemplo, si dos variables se comparan, se verifica si ambas son del tipo int, string o double.
-
+  
+## Descripción de Implementación de Ejecución de Código
+En el archivo run.h, inicialmente se tiene la función runCode() vacía. Pero cuando el parser guarda el nuevo código generado en C++, esa función tiene el contenido guardado. 
+Por lo cual, cuando la función run_code(), de la estructura Generator, llama a esta función runCode() se ejecuta el código traducido.
+      
 ## Instrucciones para Ejecutar
 
 1. Crear un nuevo proyecto con los archivos main.cpp, scanner.h, parser.h, run.h y programa.txt.
